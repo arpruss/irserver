@@ -1,0 +1,51 @@
+<html>
+<head>
+<title>Roomba 500</title>
+</head>
+<body>
+<h1>Roomba 500</h1>
+<table width='100%'>
+<tr>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:infinite:139')" onmouseout="stop()" onmouseup="stop()">Arc Left</button></td>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:infinite:130')" onmouseout="stop()" onmouseup="stop()">Forward</button></td>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:infinite:140')" onmouseout="stop()" onmouseup="stop()">Arc Right</button></td>
+</tr>
+<tr>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:infinite:129')" onmouseout="stop()" onmouseup="stop()">Left</button></td>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:137')"">Stop</button></td>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:infinite:131')" onmouseout="stop()" onmouseup="stop()">Right</button></td>
+</tr>
+<tr>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:134')" onmouseout="stop()" onmouseup="stop()">Small</button></td>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:135')" onmouseout="stop()" onmouseup="stop()">Medium</button></td>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:136')" onmouseout="stop()" onmouseup="stop()">Large</button></td>
+</tr>
+<tr>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:132')" onmouseout="stop()" onmouseup="stop()">Spot</button></td>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:133')" onmouseout="stop()" onmouseup="stop()">Max</button></td>
+<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:138')"">Power</button></td>
+</tr>
+</table>
+
+<script type='text/javascript'>
+
+function ir(code)
+{
+    var xmlHttp = null;
+
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", "ir.html?ir="+code, true );
+    xmlHttp.send( null );
+}
+
+function stop()
+{
+    ir('stop')
+}
+
+</script>
+
+</body>
+
+</html>
+

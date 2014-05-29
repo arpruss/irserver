@@ -1,0 +1,22 @@
+<html>
+<head>
+<title>IR Remote with Camera</title>
+<script type='text/javascript'>
+
+function rewrite() {
+document.getElementById("camera").src="http://"+location.hostname+":8080";
+}
+
+</script>
+</head>
+<frameset cols="25%,75%" onload="rewrite();">
+<frame src="controllers.html"/>
+<frame id="camera" src="empty.html"/>
+
+</frameset>
+
+<body>
+</body>
+
+
+</html>

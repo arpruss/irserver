@@ -1,0 +1,43 @@
+<html>
+<head>
+<title>Thames Kosmos</title>
+</head>
+<body>
+<h1>Thames Kosmos</h1>
+<table width='100%'>
+<tr>
+<td width="25%"><button style="width:100%;height:100" onmousedown="ir('tk:infinite:68')" onmouseout="stop()" onmouseup="stop()">LeftRight<br/>Fwd</button></td>
+<td width="25%"><button style="width:100%;height:100" onmousedown="ir('tk:infinite:65')" onmouseout="stop()" onmouseup="stop()">Left<br/>Fwd</button></td>
+<td width="25%"><button style="width:100%;height:100" onmousedown="ir('tk:infinite:34')" onmouseout="stop()" onmouseup="stop()">Center<br/>Fwd</button></td>
+<td width="25%"><button style="width:100%;height:100" onmousedown="ir('tk:infinite:5')" onmouseout="stop()" onmouseup="stop()">Right<br/>Fwd</button></td>
+</tr>
+<tr>
+<td><button style="width:100%;height:100" onmousedown="ir('tk:infinite:102')" onmouseout="stop()" onmouseup="stop()">LeftRight<br/>Back</button></td>
+<td><button style="width:100%;height:100" onmousedown="ir('tk:infinite:96')" onmouseout="stop()" onmouseup="stop()">Left<br/>Back</button></td>
+<td><button style="width:100%;height:100" onmousedown="ir('tk:infinite:24')" onmouseout="stop()" onmouseup="stop()">Center<br/>Back</button></td>
+<td><button style="width:100%;height:100" onmousedown="ir('tk:infinite:6')" onmouseout="stop()" onmouseup="stop()">Right<br/>Back</button></td>
+</tr>
+</table>
+
+<script type='text/javascript'>
+
+function ir(code)
+{
+    var xmlHttp = null;
+
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", "ir.html?ir="+code, true );
+    xmlHttp.send( null );
+}
+
+function stop()
+{
+    ir('stop')
+}
+
+</script>
+
+</body>
+
+</html>
+
