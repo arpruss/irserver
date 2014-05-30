@@ -41,6 +41,7 @@ class ServerHandler extends Thread {
 
   public void run() {
 	String document = "";
+    boolean head = false;    
 
     try {
       in = new BufferedReader(new InputStreamReader(toClient.getInputStream()));
@@ -53,7 +54,8 @@ class ServerHandler extends Thread {
           break;
         }
         
-        if (s.substring(0, 3).equals("GET")) {
+        if (s.startsWith("GET") || s.startsWith("HEAD")) {
+        	head = s.startsWith("HEAD");
         	int requestOffset = s.indexOf(" HTTP/");
         	if (requestOffset < 0)
         		throw new Exception();
@@ -118,21 +120,27 @@ class ServerHandler extends Thread {
     try {
       File f = new File(document);
       if (f.exists()) {
-    	  BufferedInputStream in = new BufferedInputStream(new FileInputStream(document));
-    	  BufferedOutputStream out = new BufferedOutputStream(toClient.getOutputStream());
     	  ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
     	  
-    	  byte[] buf = new byte[4096];
-    	  int count = 0;
-    	  while ((count = in.read(buf)) != -1){
-    		  tempOut.write(buf, 0, count);
+    	  if (! document.equals(docroot + "empty.html")) {
+        	  BufferedInputStream in = new BufferedInputStream(new FileInputStream(document));
+        	  
+	    	  byte[] buf = new byte[4096];
+	    	  int count = 0;
+	    	  while ((count = in.read(buf)) != -1){
+	    		  tempOut.write(buf, 0, count);
+	    	  }
+	    	  tempOut.flush();
+	    	  
+	    	  in.close();
     	  }
 
-    	  tempOut.flush();
     	  header = header.replace("%length%", ""+tempOut.size());
 
+    	  BufferedOutputStream out = new BufferedOutputStream(toClient.getOutputStream());
     	  out.write(header.getBytes());
-    	  out.write(tempOut.toByteArray());
+    	  if (! head)
+    		  out.write(tempOut.toByteArray());
     	  out.flush();
       }
       else

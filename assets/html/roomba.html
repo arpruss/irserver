@@ -6,43 +6,70 @@
 <h1>Roomba 500</h1>
 <table width='100%'>
 <tr>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:infinite:139')" onmouseout="stop()" onmouseup="stop()">Arc Left</button></td>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:infinite:130')" onmouseout="stop()" onmouseup="stop()">Forward</button></td>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:infinite:140')" onmouseout="stop()" onmouseup="stop()">Arc Right</button></td>
+<td width="33%"><button style="width:100%;height:100" ontouchstart="irtouch('infinite:roomba:139')" onmousedown="irmouse('infinite:roomba:139')">Arc Left</button></td>
+<td width="33%"><button style="width:100%;height:100" ontouchstart="irtouch('infinite:roomba:130')" onmousedown="irmouse('infinite:roomba:130')">Forward</button></td>
+<td width="33%"><button style="width:100%;height:100" ontouchstart="irtouch('infinite:roomba:140')" onmousedown="irmouse('infinite:roomba:140')">Arc Right</button></td>
 </tr>
 <tr>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:infinite:129')" onmouseout="stop()" onmouseup="stop()">Left</button></td>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:137')"">Stop</button></td>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:infinite:131')" onmouseout="stop()" onmouseup="stop()">Right</button></td>
+<td width="33%"><button style="width:100%;height:100" ontouchstart="irtouch('infinite:roomba:129')" onmousedown="ir('infinite:roomba:129')">Left</button></td>
+<td width="33%"><button style="width:100%;height:100" onclick="send('time=500000:roomba:137')">Stop</button></td>
+<td width="33%"><button style="width:100%;height:100" ontouchstart="irtouch('infinite:roomba:131')" onmousedown="ir('infinite:roomba:131')">Right</button></td>
 </tr>
 <tr>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:134')" onmouseout="stop()" onmouseup="stop()">Small</button></td>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:135')" onmouseout="stop()" onmouseup="stop()">Medium</button></td>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:136')" onmouseout="stop()" onmouseup="stop()">Large</button></td>
+<td width="33%"><button style="width:100%;height:100" onclick="send('time=500000:roomba:134')">Small</button></td>
+<td width="33%"><button style="width:100%;height:100" onclick="send('time=500000:roomba:135')">Medium</button></td>
+<td width="33%"><button style="width:100%;height:100" onclick="send('time=500000:roomba:136')">Large</button></td>
 </tr>
 <tr>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:132')" onmouseout="stop()" onmouseup="stop()">Spot</button></td>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:133')" onmouseout="stop()" onmouseup="stop()">Max</button></td>
-<td width="33%"><button style="width:100%;height:100" onmousedown="ir('roomba:time=500000:138')"">Power</button></td>
+<td width="33%"><button style="width:100%;height:100" onclick="send('time=500000:roomba:132')">Spot</button></td>
+<td width="33%"><button style="width:100%;height:100" onclick="send('time=500000:roomba:133')">Max</button></td>
+<td width="33%"><button style="width:100%;height:100" onclick="send('time=500000:roomba:138')"">Power</button></td>
 </tr>
 </table>
 
 <script type='text/javascript'>
+var touchmode = false;
 
-function ir(code)
+function irtouch(code)
 {
+    touchmode = true;
+
+    send(code);
+
+    if (code.indexOf('infinite:') == 0) {
+       cancel = function() {
+           document.ontouchend = null;
+           document.ontouchcancel = null;
+           send('stop');
+       };
+       document.ontouchend = cancel;
+       document.ontouchcancel = cancel;
+    }
+}
+
+function irmouse(code)
+{
+    if(touchmode) {
+        return;
+    }
+
+    send(code);
+
+    if (code.indexOf('infinite:') == 0) {
+       document.onmouseup = function() {
+           document.onmouseup = null;
+           send('stop');
+       };
+    }
+}
+
+function send(code) {
     var xmlHttp = null;
 
     xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", "ir.html?ir="+code, true );
+    xmlHttp.open( "HEAD", "empty.html?ir="+code, true );
     xmlHttp.send( null );
 }
-
-function stop()
-{
-    ir('stop')
-}
-
 </script>
 
 </body>

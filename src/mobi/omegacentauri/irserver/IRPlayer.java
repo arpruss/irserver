@@ -27,7 +27,8 @@ public class IRPlayer {
 		startVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 	}
 	
-	public void stop() {		
+	public void stop() {	
+		stopPlaying();
 		audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION, startVolume, 0);
 	}
 	
@@ -39,23 +40,22 @@ public class IRPlayer {
 	}
 	
 	public void play(final IRCommand command) {
-		Log.v("IRServer", "play requested");
 		stopPlaying();
 
-		if (command.stop) {
+		if (command.playMode == IRCommand.PLAY_STOP) {
 			Log.v("IRServer", "stop requested");
 			return;
 		}
 		
 		final IRToAudio converter = new IRToAudio(command);
-		final byte[] wav = converter.getSamples();
+		final byte[] samples = converter.getSamples();
 		
-		Log.v("IRServer", "playing "+wav.length);
+		Log.v("IRServer", "playing "+samples.length+" for "+converter.getSamplesTimeMicroseconds()+" us");
 		
 		int format = (IRToAudio.BITS == 16)	 ? AudioFormat.ENCODING_PCM_16BIT : AudioFormat.ENCODING_PCM_8BIT;
 		int bufferSize = AudioTrack.getMinBufferSize(IRToAudio.SAMPLE_FREQ, AudioFormat.CHANNEL_CONFIGURATION_STEREO, format);
-		if (bufferSize < wav.length)
-			bufferSize = wav.length;
+		if (bufferSize < samples.length)
+			bufferSize = samples.length;
 		track = new AudioTrack(AudioManager.STREAM_MUSIC, IRToAudio.SAMPLE_FREQ, 
 				AudioFormat.CHANNEL_CONFIGURATION_STEREO, 
 				format, 
@@ -70,7 +70,7 @@ public class IRPlayer {
 					long time = 0;
 					int count = 0;
 					while(!done(count, time)) {
-						track.write(wav, 0, wav.length);
+						track.write(samples, 0, samples.length);
 						time += converter.getSamplesTimeMicroseconds();
 						count++;
 					}
@@ -82,7 +82,7 @@ public class IRPlayer {
 			private boolean done(int count, long time) {
 				if (Thread.interrupted())
 					return true;
-				switch(command.repeatMode) {
+				switch(command.playMode) {
 				case IRCommand.PLAY_INFINITE:
 					return false;
 				case IRCommand.PLAY_ONCE:

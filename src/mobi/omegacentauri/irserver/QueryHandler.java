@@ -6,9 +6,11 @@ import android.util.Log;
 public class QueryHandler {
 	static final String IR = "ir=";
 	private IRPlayer irPlayer;
+	private boolean irEnabled;
 	
 	public QueryHandler(Context context) {
 		irPlayer = new IRPlayer(context);
+		irEnabled = true;
 	}
 	
 	public void query(String query) {
@@ -16,21 +18,21 @@ public class QueryHandler {
 		for (String c: qq) {
 			int equalsIndex = c.indexOf("=");
 			if (equalsIndex >= 0) {
-				if (c.startsWith(IR)) {
-					IRCommand irCommand = new IRCommand(c.substring(equalsIndex+1));
-					if (irCommand.valid)
-						playIR(irCommand);
+				if (irEnabled && c.startsWith(IR)) {
+					handleIR(c.substring(equalsIndex+1));
 				}
 			}
 		}
 	}
 	
-	private void playIR(IRCommand irCommand) {
-		Log.v("IRServer", "sending command on carrier "+irCommand.carrier);
-		irPlayer.play(irCommand);
+	private synchronized void handleIR(String c) {
+		IRCommand irCommand = new IRCommand(c);
+		if (irCommand.valid)
+			irPlayer.play(irCommand);
 	}
 
 	public void stop() {
 		irPlayer.stopPlaying();
+		irEnabled = false;
 	}
 }

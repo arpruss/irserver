@@ -6,35 +6,62 @@
 <h1>Thames Kosmos</h1>
 <table width='100%'>
 <tr>
-<td width="25%"><button style="width:100%;height:100" onmousedown="ir('tk:infinite:68')" onmouseout="stop()" onmouseup="stop()">LeftRight<br/>Fwd</button></td>
-<td width="25%"><button style="width:100%;height:100" onmousedown="ir('tk:infinite:65')" onmouseout="stop()" onmouseup="stop()">Left<br/>Fwd</button></td>
-<td width="25%"><button style="width:100%;height:100" onmousedown="ir('tk:infinite:34')" onmouseout="stop()" onmouseup="stop()">Center<br/>Fwd</button></td>
-<td width="25%"><button style="width:100%;height:100" onmousedown="ir('tk:infinite:5')" onmouseout="stop()" onmouseup="stop()">Right<br/>Fwd</button></td>
+<td width="25%"><button style="width:100%;height:100" ontouchstart="irtouch('infinite:tk:68')" onmousedown="irmouse('infinite:tk:68')">LeftRight<br/>Fwd</button></td>
+<td width="25%"><button style="width:100%;height:100" ontouchstart="irtouch('infinite:tk:65')" onmousedown="irmouse('infinite:tk:65')">Left<br/>Fwd</button></td>
+<td width="25%"><button style="width:100%;height:100" ontouchstart="irtouch('infinite:tk:34')" onmousedown="irmouse('infinite:tk:34')">Center<br/>Fwd</button></td>
+<td width="25%"><button style="width:100%;height:100" ontouchstart="irtouch('infinite:tk:5')" onmousedown="irmouse('infinite:tk:5')">Right<br/>Fwd</button></td>
 </tr>
 <tr>
-<td><button style="width:100%;height:100" onmousedown="ir('tk:infinite:102')" onmouseout="stop()" onmouseup="stop()">LeftRight<br/>Back</button></td>
-<td><button style="width:100%;height:100" onmousedown="ir('tk:infinite:96')" onmouseout="stop()" onmouseup="stop()">Left<br/>Back</button></td>
-<td><button style="width:100%;height:100" onmousedown="ir('tk:infinite:24')" onmouseout="stop()" onmouseup="stop()">Center<br/>Back</button></td>
-<td><button style="width:100%;height:100" onmousedown="ir('tk:infinite:6')" onmouseout="stop()" onmouseup="stop()">Right<br/>Back</button></td>
+<td><button style="width:100%;height:100" ontouchstart="irtouch('infinite:tk:102')" onmousedown="irmouse('infinite:tk:102')">LeftRight<br/>Back</button></td>
+<td><button style="width:100%;height:100" ontouchstart="irtouch('infinite:tk:96')" onmousedown="irmouse('infinite:tk:96')">Left<br/>Back</button></td>
+<td><button style="width:100%;height:100" ontouchstart="irtouch('infinite:tk:24')" onmousedown="irmouse('infinite:tk:24')">Center<br/>Back</button></td>
+<td><button style="width:100%;height:100" ontouchstart="irtouch('infinite:tk:6')" onmousedown="irmouse('infinite:tk:6')">Right<br/>Back</button></td>
 </tr>
 </table>
 
 <script type='text/javascript'>
+var touchmode = false;
 
-function ir(code)
+function irtouch(code)
 {
+    touchmode = true;
+
+    send(code);
+
+    if (code.indexOf('infinite:') == 0) {
+       cancel = function() {
+           document.ontouchend = null;
+           document.ontouchcancel = null;
+           send('stop');
+       };
+       document.ontouchend = cancel;
+       document.ontouchcancel = cancel;
+    }
+}
+
+function irmouse(code)
+{
+    if(touchmode) {
+        return;
+    }
+
+    send(code);
+
+    if (code.indexOf('infinite:') == 0) {
+       document.onmouseup = function() {
+           document.onmouseup = null;
+           send('stop');
+       };
+    }
+}
+
+function send(code) {
     var xmlHttp = null;
 
     xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", "ir.html?ir="+code, true );
+    xmlHttp.open( "HEAD", "empty.html?ir="+code, true );
     xmlHttp.send( null );
 }
-
-function stop()
-{
-    ir('stop')
-}
-
 </script>
 
 </body>

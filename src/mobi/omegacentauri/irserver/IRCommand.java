@@ -11,40 +11,41 @@ public class IRCommand {
 	public long repeatTimeMicroseconds;
 	boolean valid;
 	public int repeatPauseMicroseconds;
-	public int repeatMode;
+	public int playMode;
 	static public final int PLAY_ONCE = 0;
 	static public final int PLAY_COUNT = 1;
 	static public final int PLAY_TIME = 2;
 	static public final int PLAY_INFINITE = 3;
+	static public final int PLAY_STOP = 4;
 	static public final String ONCE = "once";
 	static public final String COUNT = "count=";
 	static public final String TIME = "time=";
 	static public final String INFINITE = "infinite";
-	boolean stop;
+	static public final String STOP = "stop";
 	
 	public IRCommand(String irString) {
 		valid = false;
 		
-		stop = false;
-		
 		String[] commands = irString.split(":");
 		
-		if (commands[0].equals("roomba")) {
-			translateRoomba(commands, repeats(commands, 1));
+		int index = repeats(commands, 0);
+		
+		if (index < 0 || commands.length <= index || playMode == PLAY_STOP)
+			return;
+		
+		if (commands[index].equals("roomba")) {
+			translateRoomba(commands, index+1);
 		}
-		else if (commands[0].equals("tk")) {
-			translateThamesKosmos(commands, repeats(commands, 1));
+		else if (commands[index].equals("tk")) {
+			translateThamesKosmos(commands, index+1);
 		}
-		else if (commands[0].equals("raw")) {
-			translateRaw(commands, repeats(commands, 1));
-		}
-		else if (commands[0].equals("stop")) {
-			stop = true;
-			valid = true;
+		else if (commands[index].equals("raw")) {
+			translateRaw(commands, index+1);
 		}
 		else if (commands[0].equals("pronto")) {
-			translatePronto(commands, repeats(commands, 1));
+			translatePronto(commands, index+1);
 		}
+		
 		if (!valid) {
 			Log.e("IRServer", "invalid command "+irString);
 		}
@@ -119,7 +120,7 @@ public class IRCommand {
 		int start;
 		int count;
 		
-		if (repeatMode == PLAY_ONCE) {
+		if (playMode == PLAY_ONCE) {
 			start = 4;
 			if (values[2] == 0)
 				count = values[3];
@@ -242,12 +243,14 @@ public class IRCommand {
 	}
 	
 	private int repeats(String[] commands, int index) {
+		if (commands.length <= index)
+			return -1;
 		
 		if (commands[index].equals(ONCE)) {
-			repeatMode = PLAY_ONCE;
+			playMode = PLAY_ONCE;
 		}
 		else if (commands[index].startsWith(COUNT)) {
-			repeatMode = PLAY_COUNT;
+			playMode = PLAY_COUNT;
 
 			try {
 				repeatCount = Integer.parseInt(commands[index].substring(COUNT.length()));
@@ -258,7 +261,7 @@ public class IRCommand {
 			}			
 		}
 		else if (commands[index].startsWith(TIME)) {
-			repeatMode = PLAY_TIME;
+			playMode = PLAY_TIME;
 			
 			try {
 				repeatTimeMicroseconds = Integer.parseInt(commands[index].substring(TIME.length()));
@@ -268,10 +271,15 @@ public class IRCommand {
 			}
 		}
 		else if (commands[index].equals(INFINITE)) {
-			repeatMode = PLAY_INFINITE;
+			playMode = PLAY_INFINITE;
 		}
-		else
+		else if (commands[index].equals(STOP)) {
+			playMode = PLAY_STOP;
+			valid = true;
+		}
+		else {
 			return -1;
+		}
 		
 		index++;
 		
