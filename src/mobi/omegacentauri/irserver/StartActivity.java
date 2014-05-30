@@ -53,6 +53,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -65,7 +67,7 @@ public class StartActivity extends Activity {
 	public static final String PREF_PORT = "port";
 	public static final String PREF_ADDRESS = "address";
 	private ToggleButton mToggleButton;
-    private EditText port;
+    private EditText portField;
     private Server server;
     private static TextView mLog;
     private static ScrollView mScroll;
@@ -87,8 +89,8 @@ public class StartActivity extends Activity {
         
         options = PreferenceManager.getDefaultSharedPreferences(this);
         mToggleButton = (ToggleButton) findViewById(R.id.toggle);
-        port = (EditText) findViewById(R.id.port);
-        port.setText(""+options.getInt(PREF_PORT, 7080));
+        portField = (EditText) findViewById(R.id.port);
+        portField.setText(""+options.getInt(PREF_PORT, 7080));
         mLog = (TextView) findViewById(R.id.log);
         mScroll = (ScrollView) findViewById(R.id.ScrollView01);
         
@@ -112,15 +114,7 @@ public class StartActivity extends Activity {
         mToggleButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				if( mToggleButton.isChecked() ) {
-					int portNum;
-					try {
-						portNum = Integer.parseInt(port.getText().toString());
-					}
-					catch (NumberFormatException e) {
-						portNum = 7080;
-					}
-					options.edit().putInt(PREF_PORT, portNum).commit();
-					startServer(portNum);
+					startServer();
 				} else {
 					stopServer();
 				}
@@ -149,7 +143,10 @@ public class StartActivity extends Activity {
 	@Override
     public void onResume() {
     	super.onResume();
-    	mToggleButton.setChecked(isServiceRunning());
+    	boolean running = isServiceRunning();
+		mToggleButton.setChecked(running);
+		if (running)
+			startServer();
     }
 
     private void stopServer() {
@@ -171,8 +168,17 @@ public class StartActivity extends Activity {
     	mScroll.fullScroll(ScrollView.FOCUS_DOWN);
     }
     
-    private void startServer(int port) {
+    private void startServer() {
     	try {
+			int port;
+			try {
+				port = Integer.parseInt(this.portField.getText().toString());
+			}
+			catch (NumberFormatException e) {
+				port = 7080;
+			}
+			options.edit().putInt(PREF_PORT, port).commit();
+
 			Log.v("IRServer", "getting ip address");
     		String ipAddress = Server.getIPAddress(this);
 			Log.v("IRServer", "got ip address");
@@ -239,4 +245,23 @@ public class StartActivity extends Activity {
 		return false;
 	}
 	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+		case R.id.options:
+			Intent i = new Intent(this, Options.class);
+			startActivity(i);
+			return true;
+		}
+		return false;
+	}
+
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main, menu);
+		
+		return true;
+	}
+
 }

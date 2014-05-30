@@ -1,30 +1,34 @@
 package mobi.omegacentauri.irserver;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class IRPlayer {
 	Context context;
 	AudioTrack track;
 	Thread writeThread = null;
-	static final int REPEAT_NONE = 0;
-	static final int REPEAT_COUNT = 1;
-	static final int REPEAT_TIME = 2;
-	int repeatMode;
+	static final int STREAM = AudioManager.STREAM_MUSIC;
 	int count;
 	long startTime;
 	long endTime;
 	int startVolume;
+	int stereoMode;
+	int pcmMode;
 	private AudioManager audioManager;
 	
 	public IRPlayer(Context context) {
 		this.context = context;
+		SharedPreferences options = PreferenceManager.getDefaultSharedPreferences(context);
+		stereoMode = Integer.parseInt(options.getString(Options.PREF_STEREO, ""+Options.OPT_STEREO_SAME));
+		pcmMode = Integer.parseInt(options.getString(Options.PREF_AUDIO_MODE, ""+Options.OPT_AUDIO_MODE_PCM16));
 		track = null;
 		audioManager = (AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
-		startVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+		startVolume = audioManager.getStreamVolume(STREAM);
 	}
 	
 	public void stop() {	
@@ -47,17 +51,19 @@ public class IRPlayer {
 			return;
 		}
 		
-		final IRToAudio converter = new IRToAudio(command);
+		Log.v("IRSserver", "calling converter");
+		
+		final IRToAudio converter = new IRToAudio(command, stereoMode, pcmMode);
 		final byte[] samples = converter.getSamples();
 		
 		Log.v("IRServer", "playing "+samples.length+" for "+converter.getSamplesTimeMicroseconds()+" us");
 		
-		int format = (IRToAudio.BITS == 16)	 ? AudioFormat.ENCODING_PCM_16BIT : AudioFormat.ENCODING_PCM_8BIT;
+		int format = (converter.bits == 16) ? AudioFormat.ENCODING_PCM_16BIT : AudioFormat.ENCODING_PCM_8BIT;
 		int bufferSize = AudioTrack.getMinBufferSize(IRToAudio.SAMPLE_FREQ, AudioFormat.CHANNEL_CONFIGURATION_STEREO, format);
 		if (bufferSize < samples.length)
 			bufferSize = samples.length;
-		track = new AudioTrack(AudioManager.STREAM_MUSIC, IRToAudio.SAMPLE_FREQ, 
-				AudioFormat.CHANNEL_CONFIGURATION_STEREO, 
+		track = new AudioTrack(STREAM, IRToAudio.SAMPLE_FREQ, 
+				(converter.channels == 2) ? AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO, 
 				format, 
 				bufferSize, AudioTrack.MODE_STREAM);
 		track.setStereoVolume(AudioTrack.getMaxVolume(), AudioTrack.getMaxVolume());
@@ -66,7 +72,7 @@ public class IRPlayer {
 		writeThread = new Thread(new Runnable(){
 			public void run() {
 				try {
-					audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+					audioManager.setStreamVolume(STREAM, audioManager.getStreamMaxVolume(STREAM), 0);
 					long time = 0;
 					int count = 0;
 					while(!done(count, time)) {

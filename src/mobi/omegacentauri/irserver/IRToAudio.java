@@ -12,16 +12,34 @@ import java.util.Arrays;
 import android.util.Log;
 
 public class IRToAudio {
+	public int channels;
     static final int SAMPLE_FREQ = 48000; // 44100;
-    public static final int BITS = 16;
-    public static final int SAMPLE_PAIR_BYTE_SIZE = 2 * BITS / 8;
+    public int bits;
+    public int samplePairByteSize; 
     byte[] samples;
     int samplePosition;
 	double phase;
 	private double phaseDelta;
+	int stereoMode;
 	
-public IRToAudio(IRCommand irCommand) {
-		phaseDelta =  (double)(irCommand.carrier / 2) / SAMPLE_FREQ * 2 * Math.PI;
+public IRToAudio(IRCommand irCommand, int stereoMode, int bitMode) {
+	Log.v("IRServer", "hello");
+
+	phaseDelta =  (double)(irCommand.carrier / 2) / SAMPLE_FREQ * 2 * Math.PI;
+		
+		if (bitMode == Options.OPT_AUDIO_MODE_PCM16)
+			bits = 16;
+		else
+			bits = 8;
+		
+		this.stereoMode = stereoMode;
+		
+		if (stereoMode == Options.OPT_STEREO_SAME)
+			channels = 1;
+		else
+			channels = 2;
+		
+		samplePairByteSize = channels * bits / 8;
 
 		int samplePairsCount = 0;
 		
@@ -31,7 +49,9 @@ public IRToAudio(IRCommand irCommand) {
 		if (irCommand.playMode != IRCommand.PLAY_ONCE) 
 			samplePairsCount += beep(irCommand.repeatPauseMicroseconds, false, false);
 
-		samples = new byte[samplePairsCount * SAMPLE_PAIR_BYTE_SIZE];
+		Log.v("IRServer", "generating "+samplePairsCount);
+		
+		samples = new byte[samplePairsCount * samplePairByteSize];
 		samplePosition = 0;
 
 		phase = 0;
@@ -52,18 +72,32 @@ public IRToAudio(IRCommand irCommand) {
 			if (sound) {
 				for (int t = 0 ; t < samplePairsCount ; t++) {
 					double v1 = Math.cos(phase);
-					double v2 = Math.sin(phase);
-					if (BITS == 8) {
+					
+					if (bits == 8) {
 						samples[samplePosition++] = (byte)(int)(128 + 126*v1);
-						samples[samplePosition++] = (byte)(int)(128 + 126*v2);
 					}
 					else {
 						short x = (short)(int)(32766 * v1);
 						samples[samplePosition++] = (byte)x;
-						samples[samplePosition++] = (byte)(x>>8);
-						x = (short)(32766 * v2);
-						samples[samplePosition++] = (byte)x;
-						samples[samplePosition++] = (byte)(x>>8);
+						samples[samplePosition++] = (byte)(x>>8);							
+					}
+					
+					if (stereoMode != Options.OPT_STEREO_SAME) {
+						double v2;
+						
+						if (stereoMode == Options.OPT_STEREO_90)
+							v2 = Math.sin(phase);
+						else
+							v2 = -v1;
+						
+						if (bits == 8) {
+							samples[samplePosition++] = (byte)(int)(128 + 126*v2);
+						}
+						else {
+							short x = (short)(int)(32766 * v2);
+							samples[samplePosition++] = (byte)x;
+							samples[samplePosition++] = (byte)(x>>8);							
+						}
 					}
 					
 					phase += phaseDelta;
@@ -74,11 +108,11 @@ public IRToAudio(IRCommand irCommand) {
 				}
 			}
 			else {
-				if (BITS == 8) {
+				if (bits == 8) {
 					// 16-bit is filled to zero by default
-					Arrays.fill(samples, samplePosition, samplePosition + samplePairsCount * SAMPLE_PAIR_BYTE_SIZE, (byte)128);
+					Arrays.fill(samples, samplePosition, samplePosition + samplePairsCount * samplePairByteSize, (byte)128);
 				}
-				samplePosition += samplePairsCount * SAMPLE_PAIR_BYTE_SIZE;
+				samplePosition += samplePairsCount * samplePairByteSize;
 				phase += phaseDelta * samplePairsCount;
 				phase %= 2 * Math.PI;
 			}
@@ -101,6 +135,6 @@ public IRToAudio(IRCommand irCommand) {
 	}
 	
 	public long getSamplesTimeMicroseconds() {
-		return samples.length * (long)1000000 / ( SAMPLE_PAIR_BYTE_SIZE * SAMPLE_FREQ );
+		return samples.length * (long)1000000 / ( samplePairByteSize * SAMPLE_FREQ );
 	}
 }

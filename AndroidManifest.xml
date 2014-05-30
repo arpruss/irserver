@@ -10,6 +10,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Options"
+            android:label="Settings"></activity>
 <service android:name="mobi.omegacentauri.irserver.ServerService" />
         </application>
     <uses-sdk android:minSdkVersion="4" />

@@ -2,4 +2,22 @@
 <resources>
     <string name="hello">Smallest Android Webserver by bolutions.com modified for IR transmission</string>
     <string name="app_name">Android IRServer</string>
+    <string-array name="stereo_labels">
+        <item>Equal channels</item>
+        <item>90° phase difference</item>
+        <item>180° phase difference</item>
+    </string-array>
+    <string-array name="stereos">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+    <string-array name="audio_mode_labels">
+        <item>PCM-16</item>
+        <item>PCM-8</item>
+    </string-array>
+    <string-array name="audio_modes">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
 </resources>
