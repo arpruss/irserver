@@ -94,22 +94,7 @@ public class StartActivity extends Activity {
         mLog = (TextView) findViewById(R.id.log);
         mScroll = (ScrollView) findViewById(R.id.ScrollView01);
         
-        String pfad = Environment.getExternalStorageDirectory().getPath()+"/mobi.omegacentauri.irserver";
-        (new File(pfad)).mkdir();
-        
-        AssetManager assets = getAssets();
-        String[] files;
-		try {
-			files = assets.list("html");
-	        for (String s: files) {
-	        	File f = new File(pfad + "/" +s);
-//	        	if (! f.exists()) {
-	        		Log.v("IRServer", "copying html/"+s);
-	        		copyAsset(f, assets.open("html/"+s));
-//	        	}
-	        }
-		} catch (IOException e) {
-		}
+        writeHTML(false);
         
         mToggleButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
@@ -248,6 +233,9 @@ public class StartActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
+		case R.id.overwrite:
+			writeHTML(true);
+			return true;
 		case R.id.options:
 			Intent i = new Intent(this, Options.class);
 			startActivity(i);
@@ -262,6 +250,27 @@ public class StartActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		
 		return true;
+	}
+	
+	private void writeHTML(boolean overwrite) {
+        String pfad = Environment.getExternalStorageDirectory().getPath()+"/mobi.omegacentauri.irserver";
+        (new File(pfad)).mkdir();
+       
+        AssetManager assets = getAssets();
+        String[] files;
+		try {
+			files = assets.list("html");
+	        for (String s: files) {
+	        	File f = new File(pfad + "/" +s);
+	        	if (overwrite || ! f.exists()) {
+	        		log("copying html/"+s);
+	        		copyAsset(f, assets.open("html/"+s));
+	        	}
+	        }
+		} catch (IOException e) {
+		}
+        
+
 	}
 
 }
