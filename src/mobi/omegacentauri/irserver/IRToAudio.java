@@ -23,8 +23,6 @@ public class IRToAudio {
 	int stereoMode;
 	
 public IRToAudio(IRCommand irCommand, int stereoMode, int bitMode) {
-	Log.v("IRServer", "hello");
-
 	phaseDelta =  (double)(irCommand.carrier / 2) / SAMPLE_FREQ * 2 * Math.PI;
 		
 		if (bitMode == Options.OPT_AUDIO_MODE_PCM16)
@@ -49,8 +47,6 @@ public IRToAudio(IRCommand irCommand, int stereoMode, int bitMode) {
 		if (irCommand.playMode != IRCommand.PLAY_ONCE) 
 			samplePairsCount += beep(irCommand.repeatPauseMicroseconds, false, false);
 
-		Log.v("IRServer", "generating "+samplePairsCount);
-		
 		samples = new byte[samplePairsCount * samplePairByteSize];
 		samplePosition = 0;
 
@@ -61,8 +57,6 @@ public IRToAudio(IRCommand irCommand, int stereoMode, int bitMode) {
 		
 		if (irCommand.playMode != IRCommand.PLAY_ONCE) 
 			beep(irCommand.repeatPauseMicroseconds, false, true);
-		
-		Log.v("IRServer", "playing "+samples.length+" "+samplePosition);
 	}
 	
 	public int beep(long microsec, boolean sound, boolean play) {
@@ -122,7 +116,6 @@ public IRToAudio(IRCommand irCommand, int stereoMode, int bitMode) {
 	}
 
 	public byte[] getSamples() {
-		Log.v("IRServer", "samples requested");
 //		try {
 //			FileOutputStream w = new FileOutputStream("/sdcard/data"+BITS+".wav");
 //			w.write(samples);

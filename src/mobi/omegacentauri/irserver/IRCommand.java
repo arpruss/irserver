@@ -55,7 +55,6 @@ public class IRCommand {
 		carrier = 38000;
 
 		repeatPauseMicroseconds = 20000;
-		Log.v("IRServer", "roomba");
 
 		if (index < 0 || commands.length <= index)
 			return;
@@ -69,9 +68,6 @@ public class IRCommand {
 			return;
 		}
 		
-		Log.v("IRServer", "value = "+b);
-		
-
 		pulses = new Pulse[2*8];
 		for (int i=0 ; i<8; i++) {
 			if (0 != (b & (1<<(7-i)))) {
@@ -93,10 +89,7 @@ public class IRCommand {
 		if (index < 0 || commands.length <= index)
 			return;
 		
-		Log.v("IRServer", "pronto "+index+ " "+commands.length);
-
 		String cleaned = commands[index].replaceAll("^\\s+", "").replaceAll("\\s+$", "").replaceAll("\\s+", " ").replaceAll("\\+", " ").replaceAll("%20",  " ");
-		Log.v("IRServer", cleaned);
 		String[] prontoData = cleaned.split(" ");
 		
 		if (prontoData.length < 5)
@@ -148,16 +141,12 @@ public class IRCommand {
 			pulses[2*i+1] = new Pulse(25 * values[start + 2*i + 1], false);
 		}
 
-		Log.v("IRServer", "pulses "+pulses.length);
-		
 		valid = true;
 	}
 	
 	private void translateThamesKosmos(String[] commands, int index) {
 		repeatPauseMicroseconds = 20000;
 		carrier = 38000;
-
-		Log.v("IRServer", "tk");
 
 		if (index < 0 || commands.length <= index)
 			return;
@@ -171,8 +160,6 @@ public class IRCommand {
 			return;
 		}
 		
-		Log.v("IRServer", "value = "+b);
-
 		makePulses(b, 2272, 762, 734);
 		
 		valid = true;
@@ -194,8 +181,6 @@ public class IRCommand {
 	private void translateRaw(String[] commands, int index) {
 		if (index < 0 || commands.length <= index)
 			return;
-		
-		Log.v("IRServer", "Translating raw");
 		
 		try {
 			repeatPauseMicroseconds = Integer.parseInt(commands[index]);
@@ -220,7 +205,6 @@ public class IRCommand {
 		
 		boolean state = true;
 		
-		Log.v("IRServer", "pulses = "+pulses.length);
 		for (int i = 0 ; i < pulses.length ; i++) {
 			pulses[i] = new Pulse();
 			
@@ -232,8 +216,6 @@ public class IRCommand {
 			catch (NumberFormatException e) {
 				pulses[i].timeInMicroSeconds = 0;
 			}
-			
-			Log.v("IRServer", "PULSE "+pulses[i].timeInMicroSeconds+" "+pulses[i].on);
 			
 			state = ! state;
 			
@@ -256,7 +238,7 @@ public class IRCommand {
 				repeatCount = Integer.parseInt(commands[index].substring(COUNT.length()));
 			}
 			catch (NumberFormatException e) {
-				Log.v("IRServer", "Ooops "+commands[index]);
+				Log.e("IRServer", "Error in "+commands[index]);
 				return -1;
 			}			
 		}

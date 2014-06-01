@@ -47,16 +47,11 @@ public class IRPlayer {
 		stopPlaying();
 
 		if (command.playMode == IRCommand.PLAY_STOP) {
-			Log.v("IRServer", "stop requested");
 			return;
 		}
 		
-		Log.v("IRSserver", "calling converter");
-		
 		final IRToAudio converter = new IRToAudio(command, stereoMode, pcmMode);
 		final byte[] samples = converter.getSamples();
-		
-		Log.v("IRServer", "playing "+samples.length+" for "+converter.getSamplesTimeMicroseconds()+" us");
 		
 		int format = (converter.bits == 16) ? AudioFormat.ENCODING_PCM_16BIT : AudioFormat.ENCODING_PCM_8BIT;
 		int bufferSize = AudioTrack.getMinBufferSize(IRToAudio.SAMPLE_FREQ, AudioFormat.CHANNEL_CONFIGURATION_STEREO, format);

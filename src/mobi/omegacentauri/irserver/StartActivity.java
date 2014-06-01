@@ -91,6 +91,8 @@ public class StartActivity extends Activity {
         mToggleButton = (ToggleButton) findViewById(R.id.toggle);
         portField = (EditText) findViewById(R.id.port);
         portField.setText(""+options.getInt(PREF_PORT, 7080));
+        portField.setSelection(portField.getText().length());
+        portField.clearFocus();
         mLog = (TextView) findViewById(R.id.log);
         mScroll = (ScrollView) findViewById(R.id.ScrollView01);
         
@@ -128,6 +130,7 @@ public class StartActivity extends Activity {
 	@Override
     public void onResume() {
     	super.onResume();
+        portField.clearFocus();
     	boolean running = isServiceRunning();
 		mToggleButton.setChecked(running);
 		if (running)

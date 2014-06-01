@@ -141,7 +141,6 @@ public class Server extends Thread {
 //		if (netInfo == null || !netInfo.isConnected())
 //			return null;
 
-		Log.v("IRServer", "should be available");
 		Enumeration<NetworkInterface> en;
 		try {
 			en = NetworkInterface.getNetworkInterfaces();

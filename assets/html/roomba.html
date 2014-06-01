@@ -40,7 +40,7 @@ function irtouch(code)
     touchmode = true;
 
     send(code);
-
+    
     if (code.indexOf('infinite:') == 0) {
        cancel = function() {
            document.ontouchend = null;
@@ -72,7 +72,7 @@ function send(code) {
     var xmlHttp = null;
 
     xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "HEAD", "empty.html?ir="+code, true );
+    xmlHttp.open( "HEAD", "/empty.html?ir="+code, true );
     xmlHttp.send( null );
 }
 </script>
