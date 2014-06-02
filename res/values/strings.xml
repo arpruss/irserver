@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Smallest Android Webserver by bolutions.com modified for IR transmission</string>
-    <string name="app_name">Android IRServer</string>
+    <string name="hello">IR Server copyright (c) 2014 Alexander R. Pruss based on Android Web Server code copyright (C) 2009-2010 Markus Bode Internetlšsungen (bolutions.com).
+</string>
+    <string name="app_name">IR Server</string>
     <string-array name="stereo_labels">
         <item>Equal channels</item>
         <item>90° phase difference</item>

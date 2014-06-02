@@ -1,8 +1,8 @@
 /*
- * Copyright (C) 2009,2010 Markus Bode Internetlšsungen (bolutions.com)
- * 
+ * IR Server copyright (c) 2014 Alexander R. Pruss based on Android Web Server code copyright (C) 2009-2010 Markus Bode Internetlšsungen (bolutions.com).
+ *
  * Licensed under the GNU General Public License v3
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -16,12 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Markus Bode
- * @version $Id: StartActivity.java 727 2011-01-02 13:04:32Z markus $
  */
+
+/* Cross-Licensing Notice: This class file on its own is 
+   (c) 2014 Alexander R. Pruss and is also available licensed 
+   under the standard BSD 2 Clause license.  If you
+   choose this option, make sure you include only the files that contain this
+   cross-licensing notice. */
+
 
 package mobi.omegacentauri.irserver;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.List;
 
@@ -52,6 +59,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -239,6 +247,9 @@ public class StartActivity extends Activity {
 		case R.id.overwrite:
 			writeHTML(true);
 			return true;
+		case R.id.license:
+			licenses();
+			return true;
 		case R.id.options:
 			Intent i = new Intent(this, Options.class);
 			startActivity(i);
@@ -253,6 +264,20 @@ public class StartActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		
 		return true;
+	}
+	
+	private void licenses() {
+		AssetManager assets = getAssets();
+		try {
+			String licenses = "";
+			BufferedReader reader = new BufferedReader(new InputStreamReader(assets.open("licenses.txt")));
+			String line;
+			while(null != (line = reader.readLine()))
+				licenses += line;
+			reader.close();
+			new AlertDialog.Builder(this).setTitle("Licenses").setMessage(Html.fromHtml(licenses)).show();
+		} catch (IOException e) {
+		}
 	}
 	
 	private void writeHTML(boolean overwrite) {

@@ -1,9 +1,8 @@
 /*
- * Copyright (C) 2009,2010 Markus Bode Internetlšsungen (bolutions.com)
- * Copyright (C) 2014 Omega Centauri Software
- * 
+ * IR Server copyright (c) 2014 Alexander R. Pruss based on Android Web Server code copyright (C) 2009-2010 Markus Bode Internetlšsungen (bolutions.com).
+ *
  * Licensed under the GNU General Public License v3
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -17,8 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Markus Bode
- * @version $Id: Server.java 727 2011-01-02 13:04:32Z markus $
  */
 
 package mobi.omegacentauri.irserver;
