@@ -1,26 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="@string/hello"
-    />
+    android:orientation="vertical" >
 
-<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="wrap_content"
-    android:gravity="center_vertical">
-<EditText android:text="7080" 
-    android:inputType="number"
-    android:id="@+id/port" android:layout_width="wrap_content" android:layout_height="wrap_content"></EditText>
-<ToggleButton android:text="ToggleButton01" android:id="@+id/toggle" android:layout_width="0dp" 
-    android:layout_weight="1" android:layout_height="wrap_content"></ToggleButton>
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/hello" />
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearLayout01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical" >
 
-<ScrollView android:id="@+id/ScrollView01" android:layout_width="fill_parent" android:layout_height="fill_parent">
-<TextView android:text="Log" android:id="@+id/log" android:layout_width="fill_parent" android:layout_height="fill_parent"></TextView>
-</ScrollView>
+        <EditText
+            android:id="@+id/port"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:text="7080" >
+        </EditText>
+
+        <ToggleButton
+            android:id="@+id/toggle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="ToggleButton01" >
+        </ToggleButton>
+
+        <Button
+            android:id="@+id/browse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onBrowse"
+            android:text="Browser" />
+    </LinearLayout>
+
+    <ScrollView
+        android:id="@+id/ScrollView01"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+
+        <TextView
+            android:id="@+id/log"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="Log" >
+        </TextView>
+    </ScrollView>
+
 </LinearLayout>

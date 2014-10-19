@@ -51,6 +51,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.net.Uri;
 import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -65,6 +66,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -88,6 +90,9 @@ public class StartActivity extends Activity {
 		}
     };
 	private SharedPreferences options;
+	private Button mBrowseButton;
+	private int port;
+	private String ipAddress = null;
 
     
     @Override
@@ -95,6 +100,8 @@ public class StartActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         
+        mBrowseButton = (Button)findViewById(R.id.browse);
+        mBrowseButton.setVisibility(View.INVISIBLE);
         options = PreferenceManager.getDefaultSharedPreferences(this);
         mToggleButton = (ToggleButton) findViewById(R.id.toggle);
         portField = (EditText) findViewById(R.id.port);
@@ -103,11 +110,11 @@ public class StartActivity extends Activity {
         portField.clearFocus();
         mLog = (TextView) findViewById(R.id.log);
         mScroll = (ScrollView) findViewById(R.id.ScrollView01);
-        
         writeHTML(false);
         
         mToggleButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
+				mBrowseButton.setVisibility(View.INVISIBLE);
 				if( mToggleButton.isChecked() ) {
 					startServer();
 				} else {
@@ -166,7 +173,6 @@ public class StartActivity extends Activity {
     
     private void startServer() {
     	try {
-			int port;
 			try {
 				port = Integer.parseInt(this.portField.getText().toString());
 			}
@@ -176,7 +182,7 @@ public class StartActivity extends Activity {
 			options.edit().putInt(PREF_PORT, port).commit();
 
 			Log.v("IRServer", "getting ip address");
-    		String ipAddress = Server.getIPAddress(this);
+    		ipAddress = Server.getIPAddress(this);
 			Log.v("IRServer", "got ip address");
     		if( ipAddress == null ) {
     			Log.v("IRServer", "no ip address");
@@ -188,6 +194,7 @@ public class StartActivity extends Activity {
             
     		log("Starting server "+ipAddress + ":" + port + ".");
     		updateService(true);
+    		mBrowseButton.setVisibility(View.VISIBLE);
 
 //		    server = new Server(this,ipAddress,port,mHandler);
 //		    server.start();
@@ -300,5 +307,13 @@ public class StartActivity extends Activity {
         
 
 	}
+	
+	public void onBrowse(View v) {
+		if (ipAddress == null) {
+			mBrowseButton.setVisibility(View.INVISIBLE);
+			return;
+		}
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://"+ipAddress+":"+port)));
+    }
 
 }
