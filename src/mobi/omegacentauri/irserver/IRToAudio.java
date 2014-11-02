@@ -89,6 +89,7 @@ public IRToAudio(IRCommand irCommand, int stereoMode, int bitMode) {
 		int samplePairsCount = (int)(microsec * SAMPLE_FREQ / 1000000);
 		
 		if (play) {
+			Log.v("IRServer", "beep "+microsec+" "+sound);
 			if (sound) {
 				for (int t = 0 ; t < samplePairsCount ; t++) {
 					double v1 = Math.cos(phase);

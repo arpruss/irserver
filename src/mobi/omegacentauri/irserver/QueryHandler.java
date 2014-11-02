@@ -56,6 +56,8 @@ public class QueryHandler {
 		IRCommand irCommand = new IRCommand(c);
 		if (irCommand.valid)
 			irPlayer.play(irCommand);
+		else
+			Log.e("IRServer", "invalid command");
 	}
 
 	public void stop() {

@@ -63,15 +63,45 @@ public class IRPlayer {
 	}
 	
 	public void stopPlaying() {
-		if (track != null)
-			track.stop();
-		if (writeThread != null)
-			writeThread.interrupt();
+		Log.v("IRServer", "track.stop");
+		if (track != null) {
+			try {
+				track.flush();
+			}
+			catch (Exception e) {
+				Log.e("IRServer", "flushing track error "+e);
+			}
+			try {
+				track.stop();
+			}
+			catch (Exception e) {
+				Log.e("IRServer", "stopping track error "+e);
+			}
+			try {
+				track.release();
+			}
+			catch (Exception e) {
+				Log.e("IRServer", "releasing track error "+e);
+			}
+			track = null;
+		}
+		Log.v("IRServer", "interrupt writing thread");
+		if (writeThread != null) {
+			try {
+			    writeThread.interrupt();
+			}
+			catch (Exception e) {
+				Log.e("IRServer", "interrupting thread error "+e);
+			}
+			writeThread = null;
+		}
 	}
 	
 	public void play(final IRCommand command) {
+		Log.v("IRServer", "play:stop");
 		stopPlaying();
 
+		Log.v("IRServer", "play mode "+command.playMode);
 		if (command.playMode == IRCommand.PLAY_STOP) {
 			return;
 		}
@@ -85,10 +115,16 @@ public class IRPlayer {
 		int bufferSize = AudioTrack.getMinBufferSize(IRToAudio.SAMPLE_FREQ, AudioFormat.CHANNEL_CONFIGURATION_STEREO, format);
 		if (bufferSize < samples.length)
 			bufferSize = samples.length;
-		track = new AudioTrack(STREAM, IRToAudio.SAMPLE_FREQ, 
-				(converter.channels == 2) ? AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO, 
-				format, 
-				bufferSize, AudioTrack.MODE_STREAM);
+		try {
+			track = new AudioTrack(STREAM, IRToAudio.SAMPLE_FREQ, 
+					(converter.channels == 2) ? AudioFormat.CHANNEL_CONFIGURATION_STEREO : AudioFormat.CHANNEL_CONFIGURATION_MONO, 
+					format, 
+					bufferSize, AudioTrack.MODE_STREAM);
+		}
+		catch (Exception e) {
+			Log.e("IRRoomba", "IRPlayer error "+e);
+			track = null;
+		}
 		track.setStereoVolume(AudioTrack.getMaxVolume(), AudioTrack.getMaxVolume());
 		track.play();
 		

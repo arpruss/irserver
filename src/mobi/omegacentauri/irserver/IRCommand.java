@@ -80,7 +80,7 @@ public class IRCommand {
 	private void translateRoomba(String[] commands, int index) {
 		carrier = 38000;
 
-		repeatPauseMicroseconds = 20000;
+		repeatPauseMicroseconds = 4000;
 
 		if (index < 0 || commands.length <= index)
 			return;
